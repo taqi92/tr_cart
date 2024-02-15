@@ -1,0 +1,1 @@
+const fetchListEndPoints = "/posts";
