@@ -9,6 +9,50 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsIconsGen {
+  const $AssetsIconsGen();
+
+  /// File path: assets/icons/back_button_nav.svg
+  String get backButtonNav => 'assets/icons/back_button_nav.svg';
+
+  /// File path: assets/icons/cart_full.svg
+  String get cartFull => 'assets/icons/cart_full.svg';
+
+  /// File path: assets/icons/icon_minus.svg
+  String get iconMinus => 'assets/icons/icon_minus.svg';
+
+  /// File path: assets/icons/icon_plus.svg
+  String get iconPlus => 'assets/icons/icon_plus.svg';
+
+  /// File path: assets/icons/lock-closed.svg
+  String get lockClosed => 'assets/icons/lock-closed.svg';
+
+  /// File path: assets/icons/shop_icon.svg
+  String get shopIcon => 'assets/icons/shop_icon.svg';
+
+  /// File path: assets/icons/shopping_cart.svg
+  String get shoppingCart => 'assets/icons/shopping_cart.svg';
+
+  /// File path: assets/icons/success_icon.svg
+  String get successIcon => 'assets/icons/success_icon.svg';
+
+  /// File path: assets/icons/trash.svg
+  String get trash => 'assets/icons/trash.svg';
+
+  /// List of all assets
+  List<String> get values => [
+        backButtonNav,
+        cartFull,
+        iconMinus,
+        iconPlus,
+        lockClosed,
+        shopIcon,
+        shoppingCart,
+        successIcon,
+        trash
+      ];
+}
+
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
@@ -19,16 +63,12 @@ class $AssetsImagesGen {
   AssetGenImage get noContent =>
       const AssetGenImage('assets/images/no_content.png');
 
-  /// File path: assets/images/og_image.png
-  AssetGenImage get ogImage =>
-      const AssetGenImage('assets/images/og_image.png');
-
   /// File path: assets/images/splash_loader.gif
   AssetGenImage get splashLoader =>
       const AssetGenImage('assets/images/splash_loader.gif');
 
   /// List of all assets
-  List<AssetGenImage> get values => [appLogo, noContent, ogImage, splashLoader];
+  List<AssetGenImage> get values => [appLogo, noContent, splashLoader];
 }
 
 class $AssetsLocalesGen {
@@ -44,6 +84,7 @@ class $AssetsLocalesGen {
 class Assets {
   Assets._();
 
+  static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsLocalesGen locales = $AssetsLocalesGen();
 }

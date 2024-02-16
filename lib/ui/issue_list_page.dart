@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:tr_cart/ui/cart_screen.dart';
 import 'package:tr_cart/ui/product_detail_page.dart';
@@ -9,8 +8,8 @@ import '../base/base_state.dart';
 import '../components/button_component.dart';
 import '../components/text_component.dart';
 import '../controller/issue_controller.dart';
+import '../gen/assets.gen.dart';
 import '../utils/constants.dart';
-import '../utils/size_config.dart';
 import '../utils/style.dart';
 
 class IssueListPage extends StatefulWidget {
@@ -21,7 +20,6 @@ class IssueListPage extends StatefulWidget {
 }
 
 class _IssueListState extends BaseState<IssueListPage> {
-
   final _productController = Get.put(IssueController());
 
   @override
@@ -34,17 +32,45 @@ class _IssueListState extends BaseState<IssueListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: myAppBar(title: 'Issues', isNavigate: false, actions: [
-        IconButton(
-            onPressed: () => Get.to(()=> CartScreen()),
-            icon: const Icon(
-              Icons.filter_alt_off,
-              color: Colors.white,
-            ))
-      ]),
+      appBar: myAppBar(
+        title: 'Issues',
+        isNavigate: false,
+        actions: <Widget>[
+          GestureDetector(
+            onTap: () {
+              if (_productController.cartList.isNotEmpty) {
+                //_productController.addProductToCart();
+
+                Get.to(
+                  () => const CartScreen(),
+                  transition: sendTransition,
+                )?.then((val) {
+                  if (val == true) {
+                    _productController.getAllIssue();
+                  }
+                });
+              } else {
+                showMessage('Cart is empty!');
+              }
+            },
+            child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GetBuilder<IssueController>(builder: (controller) {
+                  return _productController.cartList.isNotEmpty
+                      ? SvgPicture.asset(
+                          Assets.icons.cartFull,
+                          color: Colors.white,
+                        )
+                      : SvgPicture.asset(
+                          Assets.icons.shoppingCart,
+                          color: Colors.white,
+                        );
+                })),
+          )
+        ],
+      ),
       body: GetBuilder<IssueController>(
         builder: (controller) {
-
           var posts = controller.productList;
 
           if (posts.isNotEmpty) {
@@ -66,12 +92,12 @@ class _IssueListState extends BaseState<IssueListPage> {
                   padding: EdgeInsets.zero,
                   children:
                       List.generate(controller.productList.length, (index) {
-
                     var item = posts[index];
 
                     return GestureDetector(
                       onTap: () {
-                        Get.to(()=>const ProductDetailScreen(),arguments: posts[index]);
+                        Get.to(() => const ProductDetailScreen(),
+                            arguments: posts[index]);
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),
@@ -88,13 +114,10 @@ class _IssueListState extends BaseState<IssueListPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const SizedBox(
-                                height: 12,
-                              ),
                               ClipRRect(
                                   borderRadius: const BorderRadius.only(
                                       topRight: Radius.circular(10.0),
-                                      topLeft: const Radius.circular(10.0)),
+                                      topLeft: Radius.circular(10.0)),
                                   child: Container(
                                     color: Colors.white,
                                     child: item.image != null
@@ -103,7 +126,7 @@ class _IssueListState extends BaseState<IssueListPage> {
                                             child: Image.network(
                                               item.image!,
                                               //height: 100,
-                                              //fit: BoxFit.fill,
+                                              fit: BoxFit.fill,
                                             ),
                                           )
                                         : AspectRatio(
@@ -111,7 +134,7 @@ class _IssueListState extends BaseState<IssueListPage> {
                                             child: Image.asset(
                                               'assets/images/content_placeHolder.png',
                                               //height: 100,
-                                              //fit: BoxFit.fill,
+                                              fit: BoxFit.fill,
                                             ),
                                           ),
                                   )),
@@ -123,8 +146,7 @@ class _IssueListState extends BaseState<IssueListPage> {
                                   maxLines: 1,
                                   textOverflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.start,
-                                  padding: const EdgeInsets.only(
-                                      top: 0.0, bottom: 0.0, left: 0.0),
+                                  padding: EdgeInsets.zero,
                                   fontSize: 16,
                                   fontWeight: titleFontWeight,
                                   isTranslatable: false,
@@ -141,22 +163,28 @@ class _IssueListState extends BaseState<IssueListPage> {
                                 isTranslatable: false,
                               ),
                               item.userId != 0
-                                  ? ButtonComponent(
-                                    text: 'Add to Cart',
-                                    fontSize: k13FontSize,
-                                    padding: const EdgeInsets.only(
-                                        left: 16.0, right: 16.0),
-                                    onPressed: () {
+                                  ? Visibility(
+                                      visible: item.isVisible,
+                                      child: ButtonComponent(
+                                        text: 'Add to Cart',
+                                        fontSize: k13FontSize,
+                                        padding: const EdgeInsets.only(
+                                            left: 16.0, right: 16.0),
+                                        onPressed: () {
+                                          setState(() {
+                                            _productController.cartList
+                                                .add(item);
 
-                                      _productController.cartList.add(item);
-
-                                    },
-                                  )
+                                            item.isVisible = !item.isVisible;
+                                          });
+                                        },
+                                      ),
+                                    )
                                   : const TextComponent("Out of Stock",
                                       color: kErrorColor,
                                       padding: EdgeInsets.zero),
-                              /*Visibility(
-                                visible: !productItem.isVisible,
+                              Visibility(
+                                visible: !item.isVisible,
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                       left: 16.0, right: 16.0),
@@ -166,58 +194,46 @@ class _IssueListState extends BaseState<IssueListPage> {
                                     children: [
                                       Expanded(
                                           flex: 1,
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                right: 16.0),
-                                            child: GestureDetector(
-                                                onTap: () {
-                                                  if (productItem.quantity <=
-                                                      1) {
-                                                    showMessage(
-                                                        'Can\'t be lower than 1');
-                                                  } else {
-                                                    setState(() {
-                                                      productItem.quantity !=
-                                                              null
-                                                          ? productItem
-                                                              .quantity--
-                                                          : null;
-                                                    });
+                                          child: GestureDetector(
+                                              onTap: () {
+                                                if (item.quantity <= 1) {
+                                                  showMessage(
+                                                      'Can\'t be lower than 1');
+                                                } else {
+                                                  setState(() {
+                                                    item.quantity != 0
+                                                        ? item.quantity--
+                                                        : null;
+                                                  });
 
-                                                    updateQuantity(
-                                                        productItem.id,
-                                                        productItem.quantity);
-
-                                                    // _productController
-                                                    //     .addInCart(
-                                                    //         productItem);
-                                                  }
-                                                },
-                                                child: SvgPicture.asset(
-                                                    Assets.icons.iconMinus)),
-                                          )),
+                                                  controller.updateQuantity(
+                                                      item.id!, item.quantity);
+                                                }
+                                              },
+                                              child: SvgPicture.asset(
+                                                  Assets.icons.iconMinus))),
                                       Expanded(
                                           flex: 2,
                                           child: TextComponent(
-                                            productItem.quantity.toString(),
+                                            item.quantity.toString(),
                                             maxLines: 1,
                                             fontWeight: boldFontWeight,
-                                            fontSize: smallestFontSize,
+                                            fontSize: k13FontSize,
                                             isTranslatable: false,
                                           )),
                                       Expanded(
                                           flex: 1,
                                           child: GestureDetector(
                                               onTap: () {
-                                                if (productItem.quantity > 0) {
+                                                if (item.quantity > 0) {
                                                   setState(() {
-                                                    productItem.quantity != null
-                                                        ? productItem.quantity++
+                                                    item.quantity != 0
+                                                        ? item.quantity++
                                                         : null;
                                                   });
 
-                                                  updateQuantity(productItem.id,
-                                                      productItem.quantity);
+                                                  controller.updateQuantity(
+                                                      item.id!, item.quantity);
                                                   //_productController.addInCart(productItem);
                                                 }
                                               },
@@ -226,7 +242,7 @@ class _IssueListState extends BaseState<IssueListPage> {
                                     ],
                                   ),
                                 ),
-                              ),*/
+                              ),
                             ],
                           ),
                         ),

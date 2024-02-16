@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,23 +30,29 @@ class _CartScreenState extends BaseState<CartScreen> {
   final _productController = Get.put(IssueController());
 
   @override
+  void initState() {
+    // TODO: implement initState
+
+    _productController.getOrderTotal();
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kCardBackground,
-      appBar: myAppBar(
-        title: 'Cart',
-        actions: <Widget>[
-          GestureDetector(
-            onTap: () {
-              _clearCartAlertDialog();
-            },
-            /*child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: SvgPicture.asset(Assets.icons.trash),
-            ),*/
-          )
-        ],
-      ),
+      appBar: myAppBar(title: 'Cart', actions: <Widget>[
+        GestureDetector(
+          onTap: () {
+            _clearCartAlertDialog();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SvgPicture.asset(Assets.icons.trash),
+          ),
+        )
+      ]),
       body: SafeArea(
         child: Stack(
           children: [
@@ -57,9 +65,8 @@ class _CartScreenState extends BaseState<CartScreen> {
                       shrinkWrap: true,
                       itemCount: _productController.cartList.length,
                       scrollDirection: Axis.vertical,
-                      physics: AlwaysScrollableScrollPhysics(),
+                      physics: const AlwaysScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-
                         var item = _productController.cartList[index];
 
                         return Column(
@@ -67,7 +74,7 @@ class _CartScreenState extends BaseState<CartScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(12.0),
@@ -86,7 +93,7 @@ class _CartScreenState extends BaseState<CartScreen> {
                                           child: ClipRRect(
                                             borderRadius: borderRadius,
                                             child: SizedBox.fromSize(
-                                              size: Size.fromRadius(36),
+                                              size: const Size.fromRadius(36),
                                               // Image radius
                                               child: item.image != null
                                                   ? AspectRatio(
@@ -116,13 +123,17 @@ class _CartScreenState extends BaseState<CartScreen> {
                                             maxLines: 3,
                                             fontSize: textFontSize,
                                             fontWeight: titleFontWeight,
+                                            isTranslatable: false,
                                             padding: EdgeInsets.only(
-                                                left: 16.0, bottom: 4.0,right: 16.0),
+                                                left: 8.0,
+                                                bottom: 4.0,
+                                                right: 8.0),
                                           ),
                                           TextComponent("\$${item.userId}0",
                                               fontSize: 14,
                                               fontWeight: titleFontWeight,
                                               color: kSecondaryColor,
+                                              isTranslatable: false,
                                               padding: EdgeInsets.only(
                                                   left: 16.0, top: 0.0)),
                                         ],
@@ -132,7 +143,7 @@ class _CartScreenState extends BaseState<CartScreen> {
                                 ),
                               ),
                             ),
-                            /*Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Expanded(
@@ -144,9 +155,11 @@ class _CartScreenState extends BaseState<CartScreen> {
                                               const EdgeInsets.only(left: 24.0),
                                           child: GestureDetector(
                                             onTap: () {
-                                              _productController.removeItem(index);
+                                              _productController
+                                                  .removeItem(index);
 
-                                              showMessage("Item Has removed", isToast: true);
+                                              showMessage("Item Has removed",
+                                                  isToast: true);
                                             },
                                             child: SvgPicture.asset(
                                                 Assets.icons.trash),
@@ -164,14 +177,13 @@ class _CartScreenState extends BaseState<CartScreen> {
                                                   'Can\'t be lower than 1');
                                             } else {
                                               setState(() {
-                                                item.quantity != null
+                                                item.quantity != 0
                                                     ? item.quantity--
                                                     : null;
-                                                _productController
-                                                    .addProductToCart();
 
-                                                updateQuantity(
-                                                    item.id, item.quantity);
+                                                //_productController.addProductToCart();
+
+                                                updateQuantity(item.id!, item.quantity);
                                               });
                                             }
                                           },
@@ -184,7 +196,7 @@ class _CartScreenState extends BaseState<CartScreen> {
                                         item.quantity.toString(),
                                         maxLines: 1,
                                         fontWeight: boldFontWeight,
-                                        fontSize: smallestFontSize,
+                                        fontSize: k13FontSize,
                                         padding: EdgeInsets.all(0.0))),
                                 Expanded(
                                     flex: 1,
@@ -192,22 +204,22 @@ class _CartScreenState extends BaseState<CartScreen> {
                                         onTap: () {
                                           if (item.quantity > 0) {
                                             setState(() {
-                                              item.quantity != null
+                                              item.quantity != 0
                                                   ? item.quantity++
                                                   : null;
-                                              _productController
-                                                  .addProductToCart();
+
+                                              //_productController.addProductToCart();
 
                                               updateQuantity(
-                                                  item.id, item.quantity);
+                                                  item.id!, item.quantity);
                                             });
                                           }
                                         },
                                         child: SvgPicture.asset(
                                             Assets.icons.iconPlus))),
                               ],
-                            ),*/
-                            SizedBox(
+                            ),
+                            const SizedBox(
                               height: 4,
                             ),
                             Divider(
@@ -245,20 +257,22 @@ class _CartScreenState extends BaseState<CartScreen> {
                         fontSize: k13FontSize,
                         padding:
                             EdgeInsets.only(left: 20, top: 16.0, bottom: 4.0)),
-                    /*Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextComponent(
                           'Subtotal',
                           fontSize: 12,
                           fontWeight: regularFontWeight,
+                          isTranslatable: false,
                         ),
                         Obx(() => TextComponent(
                             _productController.orderSubTotal.value != null
                                 ? "\$${_productController.orderSubTotal.value}0"
                                 : "0.00",
-                            fontSize: 12,
-                            fontWeight: mediumFontWeight)),
+                            fontSize: k13FontSize,
+                            fontWeight: mediumFontWeight),
+                        ),
                       ],
                     ),
                     Row(
@@ -268,13 +282,14 @@ class _CartScreenState extends BaseState<CartScreen> {
                           'Fees',
                           fontSize: 12,
                           fontWeight: regularFontWeight,
+                          isTranslatable: false,
                         ),
-                        Obx(() => TextComponent(
-                            _productController.orderFee.value != null
-                                ? "\$${_productController.orderFee.value}0"
-                                : "0.00",
-                            fontSize: 12,
-                            fontWeight: mediumFontWeight)),
+                        TextComponent(
+                          "0.00",
+                          fontSize: k13FontSize,
+                          fontWeight: mediumFontWeight,
+                          isTranslatable: false,
+                        )
                       ],
                     ),
                     Row(
@@ -284,17 +299,18 @@ class _CartScreenState extends BaseState<CartScreen> {
                           'Sales Tax',
                           fontSize: 12,
                           fontWeight: regularFontWeight,
+                          isTranslatable: false,
                         ),
-                        Obx(() => TextComponent(
-                            _productController.orderSalesTax.value != null
-                                ? "\$${_productController.orderSalesTax.value}0"
-                                : "0.00",
-                            fontSize: 12,
-                            fontWeight: mediumFontWeight)),
+                        TextComponent(
+                          "0.00",
+                          fontSize: k13FontSize,
+                          fontWeight: mediumFontWeight,
+                          isTranslatable: false,
+                        )
                       ],
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                      padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -302,16 +318,19 @@ class _CartScreenState extends BaseState<CartScreen> {
                             'Total',
                             fontSize: 12,
                             fontWeight: regularFontWeight,
+                            isTranslatable: false,
                           ),
-                          Obx(() => TextComponent(
-                              _productController.orderTotal.value != null
-                                  ? "\$${_productController.orderTotal.value}0"
-                                  : "0.00",
-                              fontSize: textSmallFontSize,
-                              fontWeight: boldFontWeight)),
+                          Obx(
+                            () => TextComponent(
+                                _productController.orderTotal.value != null
+                                    ? "\$${_productController.orderTotal.value}0"
+                                    : "0.00",
+                                fontSize: textSmallFontSize,
+                                fontWeight: boldFontWeight),
+                          ),
                         ],
                       ),
-                    ),*/
+                    ),
                   ],
                 ),
               ),
@@ -319,10 +338,9 @@ class _CartScreenState extends BaseState<CartScreen> {
           ),
           ButtonComponent(
             text: 'Proceed to shipping',
-            onPressed: () {
-
-            },
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
+            onPressed: () {},
+            padding:
+                const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
           )
         ],
       ),
@@ -338,13 +356,24 @@ class _CartScreenState extends BaseState<CartScreen> {
     _productController.cartList[searchId] = item;
   }*/
 
+  void updateQuantity(int id, int newQuantity) {
+    for (var item in _productController.cartList) {
+      if (item.id == id) {
+        item.quantity = newQuantity;
+        break;
+      }
+    }
+    // Recalculate order total
+    int newTotal = _productController.getOrderTotal();
+  }
+
   void _clearCartAlertDialog() {
     Get.defaultDialog(
       title: "Cart Alert",
       textConfirm: "Remove",
       textCancel: "Cancel",
       radius: 14,
-      content: TextComponent(
+      content: const TextComponent(
         "Are sure you want to clear the cart?",
         textAlign: TextAlign.center,
       ),
@@ -355,7 +384,7 @@ class _CartScreenState extends BaseState<CartScreen> {
       contentPadding: const EdgeInsets.all(16),
       onConfirm: () {
         Navigator.pop(context);
-        //_productController.clearCart();
+        _productController.clearCart();
       },
     );
   }

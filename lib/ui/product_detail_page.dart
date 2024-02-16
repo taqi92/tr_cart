@@ -22,7 +22,6 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
-
   ProductResponse? data;
 
   int? selectedRadio;
@@ -60,7 +59,7 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                 padding:
                     const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
                 child: ClipRRect(
-                    borderRadius: BorderRadius.circular(13),
+                    borderRadius: BorderRadius.circular(24),
                     child: Container(
                       width: SizeConfig.getScreenWidth(context),
                       color: Colors.white,
@@ -77,7 +76,6 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                               child: Image.asset(
                                 'assets/images/content_placeHolder.png',
                                 fit: BoxFit.fill,
-                                //height: SizeConfig.getScreenHeight(context),
                               ),
                             ),
                     )),
@@ -86,7 +84,7 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Card(
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(color: Colors.white, width: 1),
+                    side: const BorderSide(color: Colors.white, width: 1),
                     borderRadius: BorderRadius.circular(24),
                   ),
                   elevation: 8,
@@ -124,7 +122,7 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                         fontWeight: regularFontWeight,
                         padding: EdgeInsets.all(16.0),
                       ),
-                      TextComponent(
+                      const TextComponent(
                         "Quantity",
                         isTranslatable: false,
                         textAlign: TextAlign.justify,
@@ -132,69 +130,27 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                         fontSize: textSmallFontSize,
                         fontWeight: mediumFontWeight,
                         padding: EdgeInsets.only(left: 16.0),
-                      )
-                      /*data?.productAttributes != null &&
-                              data?.productAttributes?[0].stock == true
-                          ? TextComponent(
-                              "Quantity",
-                              isTranslatable: false,
-                              textAlign: TextAlign.justify,
-                              color: kTextColor,
-                              fontSize: textSmallFontSize,
-                              fontWeight: mediumFontWeight,
-                              padding: EdgeInsets.only(left: 16.0),
-                            )
-                          : SizedBox.shrink(),*/
-                      /*data?.productAttributes != null &&
-                              data?.productAttributes?[0].stock == true
-                          ? Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: Container(
-                                width: SizeConfig.getScreenWidth(context) / 2,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                        flex: 1,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 16.0),
-                                          child: GestureDetector(
-                                              onTap: () {
-                                                if ((data?.quantity ?? 1) <=
-                                                    1) {
-                                                  showMessage(
-                                                      'Can\'t be lower than 1');
-                                                } else {
-                                                  setState(() {
-                                                    data?.quantity != null
-                                                        ? data?.quantity--
-                                                        : null;
-                                                  });
-
-                                                  updateQuantity(data?.id,
-                                                      data?.quantity ?? 1);
-                                                }
-                                              },
-                                              child: SvgPicture.asset(
-                                                  Assets.icons.iconMinus)),
-                                        )),
-                                    Expanded(
-                                        flex: 2,
-                                        child: TextComponent(
-                                          data?.quantity.toString(),
-                                          maxLines: 1,
-                                          fontWeight: boldFontWeight,
-                                          fontSize: textSmallFontSize,
-                                        )),
-                                    Expanded(
-                                      flex: 1,
-                                      child: GestureDetector(
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Container(
+                          width: SizeConfig.getScreenWidth(context) / 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                  flex: 1,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: GestureDetector(
                                         onTap: () {
-                                          if ((data?.quantity ?? 1) > 0) {
+                                          if ((data?.quantity ?? 1) <= 1) {
+                                            showMessage(
+                                                'Can\'t be lower than 1');
+                                          } else {
                                             setState(() {
                                               data?.quantity != null
-                                                  ? data?.quantity++
+                                                  ? data?.quantity--
                                                   : null;
                                             });
 
@@ -203,15 +159,40 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                                           }
                                         },
                                         child: SvgPicture.asset(
-                                          Assets.icons.iconPlus,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                            Assets.icons.iconMinus)),
+                                  )),
+                              Expanded(
+                                  flex: 2,
+                                  child: TextComponent(
+                                    data?.quantity.toString(),
+                                    maxLines: 1,
+                                    fontWeight: boldFontWeight,
+                                    fontSize: textSmallFontSize,
+                                  )),
+                              Expanded(
+                                flex: 1,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if ((data?.quantity ?? 1) > 0) {
+                                      setState(() {
+                                        data?.quantity != null
+                                            ? data?.quantity++
+                                            : null;
+                                      });
+
+                                      updateQuantity(
+                                          data?.id, data?.quantity ?? 1);
+                                    }
+                                  },
+                                  child: SvgPicture.asset(
+                                    Assets.icons.iconPlus,
+                                  ),
                                 ),
                               ),
-                            )
-                          : SizedBox.shrink(),*/
+                            ],
+                          ),
+                        ),
+                      )
                     ],
                   ),
                 ),

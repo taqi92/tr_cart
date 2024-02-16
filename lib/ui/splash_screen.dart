@@ -46,7 +46,7 @@ class _SplashScreenState extends BaseState<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                Assets.images.ogImage.path,
+                Assets.images.appLogo.path,
                 fit: BoxFit.fitHeight,
               ),
               Image.asset(Assets.images.splashLoader.path),

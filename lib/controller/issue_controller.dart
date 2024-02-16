@@ -21,17 +21,21 @@ class IssueController extends GetxController {
   int pageNo = 1;
   bool isLastPage = false;
 
+  var orderSubTotal = Rxn<int>();
+  var orderFee = Rxn<double>();
+  var orderSalesTax = Rxn<double>();
+  var orderTotal = Rxn<int>();
+
   @override
   void onInit() {
     _issueRepository = IssueRepository();
     super.onInit();
   }
 
-  Future<void> getAllIssue({
-    int pageSize = 20,
-    bool isFromLoadNext = false,
-    bool isLabeled = false
-  }) async {
+  Future<void> getAllIssue(
+      {int pageSize = 20,
+      bool isFromLoadNext = false,
+      bool isLabeled = false}) async {
     if (!isFromLoadNext) {
       productList = [];
       pageNo = 1;
@@ -43,21 +47,16 @@ class IssueController extends GetxController {
 
     //url = "${fetchListEndPoints}page=$pageNo&per_page=$pageSize";
 
-
-
     _issueRepository.getProduct(fetchListEndPoints, (response, error) {
       if (response != null) {
-
         var payload = response;
 
         for (var item in payload) {
           productList.add(item);
         }
 
-        if(response.isEmpty){
-
+        if (response.isEmpty) {
           isLastPage = true;
-
         }
 
         dismissLoading();
@@ -85,10 +84,55 @@ class IssueController extends GetxController {
     getAllIssue(isLabeled: true);
   }
 
-  void clearFilter(){
-
+  void clearFilter() {
     labelList.clear();
     getAllIssue();
   }
 
+  removeItem(int index) {
+    cartList.removeAt(index);
+    update();
+
+    if (cartList.isEmpty) {
+      clearCart();
+    }
+
+    getOrderTotal();
+
+  }
+
+  clearCart() {
+    cartList.clear();
+    cartList = [];
+    update();
+
+    orderSubTotal.value = 0;
+    orderFee.value = 0.0;
+    orderSalesTax.value = 0.0;
+    orderTotal.value = 0;
+    Get.back(result: true);
+  }
+
+  getOrderTotal() {
+    int total = 0;
+    for (var item in cartList) {
+      total += item.userId! * item.quantity;
+    }
+
+    orderTotal.value = total;
+    orderSubTotal.value = total;
+
+    return orderTotal.value!;
+  }
+
+  void updateQuantity(int id, int newQuantity) {
+    for (var item in cartList) {
+      if (item.id == id) {
+        item.quantity = newQuantity;
+        break;
+      }
+    }
+
+    getOrderTotal();
+  }
 }
