@@ -32,8 +32,7 @@ class _SplashScreenState extends BaseState<SplashScreen> {
       } else {
         // No-Internet Case
 
-        proceed();
-        //showWarningDialog(context);
+        showWarningDialog(context);
       }
     });
   }
@@ -41,7 +40,6 @@ class _SplashScreenState extends BaseState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: kPreliminaryColor,
         body: Center(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -49,84 +47,15 @@ class _SplashScreenState extends BaseState<SplashScreen> {
             children: [
               Image.asset(
                 Assets.images.appLogo.path,
-                fit: BoxFit.fitHeight,
+                fit: BoxFit.fill,
+                height: 100,
+                width: 100,
               ),
               Image.asset(Assets.images.splashLoader.path),
             ],
           ),
         ));
   }
-
-  /*showWarningDialog(BuildContext context) {
-    Widget continueButton = TextButton(
-      child: const Text(
-        "Retry",
-      ),
-      onPressed: () {
-        Navigator.pop(context);
-
-        isInternetConnected(context).then((internet) {
-          if (internet) {
-            // Internet Present Case
-            //startTime();
-          } else {
-            // No-Internet Case
-            showWarningDialog(context);
-          }
-        });
-      },
-    );
-
-    Widget cancelButton = TextButton(
-      child: const Text(
-        "Exit",
-      ),
-      onPressed: () {
-        if (Platform.isAndroid) {
-          SystemNavigator.pop();
-        } else if (Platform.isIOS) {
-          exit(0);
-        }
-      },
-    );
-
-    if (Platform.isIOS) {
-      CupertinoAlertDialog alert = CupertinoAlertDialog(
-        title: const Text(
-          "No Internet connection!",
-        ),
-        content: const Text(
-          "Please Connect your device to internet first",
-        ),
-        actions: [cancelButton, continueButton],
-      );
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    } else {
-      AlertDialog alert = AlertDialog(
-        elevation: 2,
-        title: const Text(
-          "No Internet connection!",
-        ),
-        content: const Text(
-          "Please Connect your device to internet first",
-        ),
-        actions: [cancelButton, continueButton],
-      );
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }*/
 
   showWarningDialog(BuildContext context) {
     Widget continueButton = TextButton(

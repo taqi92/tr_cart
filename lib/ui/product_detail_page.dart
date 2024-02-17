@@ -42,7 +42,6 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kPrimaryLightColor,
       appBar: myAppBar(title: "Product Detail", actions: <Widget>[
         GestureDetector(
           onTap: () {
