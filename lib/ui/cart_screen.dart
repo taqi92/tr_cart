@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:get/get.dart';
 import 'package:tr_cart/controller/product_controller.dart';
+import 'package:tr_cart/ui/product_list_page.dart';
 import '../../base/base_state.dart';
 import '../components/button_component.dart';
 import '../components/text_component.dart';
@@ -183,7 +184,7 @@ class _CartScreenState extends BaseState<CartScreen> {
 
                                                 //_productController.addProductToCart();
 
-                                                updateQuantity(item.id!, item.quantity);
+                                                controller.updateQuantity(item.id!, item.quantity);
                                               });
                                             }
                                           },
@@ -210,7 +211,7 @@ class _CartScreenState extends BaseState<CartScreen> {
 
                                               //_productController.addProductToCart();
 
-                                              updateQuantity(
+                                              controller.updateQuantity(
                                                   item.id!, item.quantity);
                                             });
                                           }
@@ -338,7 +339,11 @@ class _CartScreenState extends BaseState<CartScreen> {
           ),
           ButtonComponent(
             text: 'Checkout',
-            onPressed: () {},
+            onPressed: () {
+
+                _productController.checkout();
+
+            },
             padding:
                 const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
           )
@@ -347,16 +352,7 @@ class _CartScreenState extends BaseState<CartScreen> {
     );
   }
 
-  void updateQuantity(int id, int newQuantity) {
-    for (var item in _productController.cartList) {
-      if (item.id == id) {
-        item.quantity = newQuantity;
-        break;
-      }
-    }
-    // Recalculate order total
-    int newTotal = _productController.getOrderTotal();
-  }
+
 
   void _clearCartAlertDialog() {
     Get.defaultDialog(

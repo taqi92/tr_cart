@@ -230,7 +230,14 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
               padding: const EdgeInsets.only(bottom: 20.0),
               child: ButtonComponent(
                 text: 'Add to Cart',
-                onPressed: () {},
+                onPressed: () {
+
+                  setState(() {
+                    _productController.cartList
+                        .add(data!);
+                  });
+
+                },
               ),
             )
           : const SizedBox.shrink(),
