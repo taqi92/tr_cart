@@ -75,6 +75,8 @@ class ProductController extends GetxController {
     getProducts();
   }
 
+
+
   removeItem(int index) {
     cartList.removeAt(index);
     update();
@@ -84,6 +86,18 @@ class ProductController extends GetxController {
     }
 
     getOrderTotal();
+  }
+
+  checkout(){
+
+    showMessage("Your Order has accepted!",isToast: true);
+
+    Future.delayed(const Duration(milliseconds: 2000), () {
+
+      clearCart();
+
+    });
+
   }
 
   clearCart() {
@@ -96,6 +110,7 @@ class ProductController extends GetxController {
     orderSalesTax.value = 0.0;
     orderTotal.value = 0;
     Get.back(result: true);
+
   }
 
   getOrderTotal() {

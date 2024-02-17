@@ -14,14 +14,14 @@ import '../utils/constants.dart';
 import '../utils/size_config.dart';
 import '../utils/style.dart';
 
-class IssueListPage extends StatefulWidget {
-  const IssueListPage({super.key});
+class ProductListPage extends StatefulWidget {
+  const ProductListPage({super.key});
 
   @override
-  State<IssueListPage> createState() => _IssueListState();
+  State<ProductListPage> createState() => _ProductListState();
 }
 
-class _IssueListState extends BaseState<IssueListPage> {
+class _ProductListState extends BaseState<ProductListPage> {
   final _productController = Get.put(ProductController());
 
   @override
@@ -301,6 +301,7 @@ class _IssueListState extends BaseState<IssueListPage> {
     setState(() {
       // Update the data
       _productController.getProducts();
+
     });
   }
 }

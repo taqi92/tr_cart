@@ -96,7 +96,7 @@ class _SplashScreenState extends BaseState<SplashScreen> {
 
   void proceed() {
     Future.delayed(const Duration(milliseconds: 2000), () {
-      Get.offAll(() => const IssueListPage(), transition: sendTransition);
+      Get.offAll(() => const ProductListPage(), transition: sendTransition);
     });
   }
 }
