@@ -1,13 +1,32 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tr_cart/ui/splash_screen.dart';
+
+import 'db_adapter/product_adapter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  var path;
+
+  final directory = await getApplicationDocumentsDirectory();
+
+  path = directory.path;
+
+  final hiveDirectory = Directory('$path/hive_data');
+
+
+  Hive
+    ..init(hiveDirectory.path)
+    ..registerAdapter(ProductAdapter());
 
   runApp(
     EasyLocalization(

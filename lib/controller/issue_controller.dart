@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
+import 'package:tr_cart/db_adapter/product_adapter.dart';
 import '../model/issue_response.dart';
 import '../repositories/issue_repository.dart';
 import '../utils/constants.dart';
@@ -26,9 +28,16 @@ class IssueController extends GetxController {
   var orderSalesTax = Rxn<double>();
   var orderTotal = Rxn<int>();
 
+  final loading = false.obs;
+
+  late Box<Product> productBox;
+
+  List<Product> productDbList = [];
+
   @override
   void onInit() {
     _issueRepository = IssueRepository();
+    openDb();
     super.onInit();
   }
 
@@ -36,16 +45,16 @@ class IssueController extends GetxController {
       {int pageSize = 20,
       bool isFromLoadNext = false,
       bool isLabeled = false}) async {
+
+    loading.value = true;
+
     if (!isFromLoadNext) {
       productList = [];
       pageNo = 1;
     }
 
-    loading();
+    //loading();
 
-    late String url;
-
-    //url = "${fetchListEndPoints}page=$pageNo&per_page=$pageSize";
 
     _issueRepository.getProduct(fetchListEndPoints, (response, error) {
       if (response != null) {
@@ -60,8 +69,17 @@ class IssueController extends GetxController {
         }
 
         dismissLoading();
+
+        if(productList.isNotEmpty){
+
+          storeLocalData();
+
+        }
+
+        loading.value = false;
         update();
       } else {
+        loading.value = false;
         showMessage(error);
       }
     });
@@ -72,16 +90,6 @@ class IssueController extends GetxController {
       pageNo++;
       getAllIssue(isFromLoadNext: true);
     }
-  }
-
-  void addLabelsToList(String input) {
-    labelList.add(input);
-
-    labelList.forEach((element) {
-      log("label + $element");
-    });
-
-    getAllIssue(isLabeled: true);
   }
 
   void clearFilter() {
@@ -98,7 +106,6 @@ class IssueController extends GetxController {
     }
 
     getOrderTotal();
-
   }
 
   clearCart() {
@@ -134,5 +141,59 @@ class IssueController extends GetxController {
     }
 
     getOrderTotal();
+  }
+
+  Future<void> openDb() async {
+    productBox = await Hive.openBox<Product>('product');
+  }
+
+  void storeLocalData() {
+    if (productList.isNotEmpty) {
+      for (var element in productList) {
+        productBox.put(
+            element.id,
+            Product(element.id, element.title, element.content, element.image,
+                element.thumbnail, element.userId));
+      }
+
+      productDbList = productBox.values.toList();
+
+
+    }
+  }
+
+  getDataFromDb(){
+
+    if(productDbList.isNotEmpty){
+
+      for (var element in productDbList) {
+
+        log("data $element");
+
+      }
+
+      productList = productDbList.cast<ProductResponse>();
+
+      loading.value = false;
+
+    }else{
+
+      loading.value = false;
+      showMessage("no data");
+
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    closeDB();
+
+    super.dispose();
+  }
+
+  Future<void> closeDB() async {
+    await Hive.close();
   }
 }

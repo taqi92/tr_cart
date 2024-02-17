@@ -31,7 +31,9 @@ class _SplashScreenState extends BaseState<SplashScreen> {
         proceed();
       } else {
         // No-Internet Case
-        showWarningDialog(context);
+
+        proceed();
+        //showWarningDialog(context);
       }
     });
   }

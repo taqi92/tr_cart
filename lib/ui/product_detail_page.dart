@@ -13,6 +13,7 @@ import '../../utils/constants.dart';
 import '../../utils/style.dart';
 import '../components/button_component.dart';
 import '../utils/size_config.dart';
+import 'cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({Key? key}) : super(key: key);
@@ -48,7 +49,37 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kPrimaryLightColor,
-      appBar: myAppBar(title: "Product Detail"),
+      appBar: myAppBar(title: "Product Detail", actions: <Widget>[
+        GestureDetector(
+          onTap: () {
+            if (_productController.cartList.isNotEmpty) {
+              Get.to(
+                () => const CartScreen(),
+                transition: sendTransition,
+              )?.then((val) {
+                if (val == true) {
+                  _productController.getAllIssue();
+                }
+              });
+            } else {
+              showMessage('Cart is empty!');
+            }
+          },
+          child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: GetBuilder<IssueController>(builder: (controller) {
+                return _productController.cartList.isNotEmpty
+                    ? SvgPicture.asset(
+                        Assets.icons.cartFull,
+                        color: Colors.white,
+                      )
+                    : SvgPicture.asset(
+                        Assets.icons.shoppingCart,
+                        color: Colors.white,
+                      );
+              })),
+        )
+      ]),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(top: 0.0),
@@ -154,8 +185,8 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                                                   : null;
                                             });
 
-                                            updateQuantity(
-                                                data?.id, data?.quantity ?? 1);
+                                            _productController.updateQuantity(
+                                                data!.id!, data?.quantity ?? 1);
                                           }
                                         },
                                         child: SvgPicture.asset(
@@ -180,8 +211,8 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                                             : null;
                                       });
 
-                                      updateQuantity(
-                                          data?.id, data?.quantity ?? 1);
+                                      _productController.updateQuantity(
+                                          data!.id!, data?.quantity ?? 1);
                                     }
                                   },
                                   child: SvgPicture.asset(
@@ -209,17 +240,8 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                 onPressed: () {},
               ),
             )
-          : SizedBox.shrink(),
+          : const SizedBox.shrink(),
     );
-  }
-
-  void updateQuantity(int? productItemId, int quantity) {
-    // final searchId = _productController.cartList
-    //     .indexWhere((element) => element.id == productItemId);
-    //
-    // var item = _productController.cartList[searchId];
-    // item.quantity = quantity;
-    // _productController.cartList[searchId] = item;
   }
 
   setSelectedRadio(int val) {
