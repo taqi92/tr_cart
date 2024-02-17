@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:get/get.dart';
-import 'package:tr_cart/controller/issue_controller.dart';
+import 'package:tr_cart/controller/product_controller.dart';
 import '../../base/base_state.dart';
 import '../components/button_component.dart';
 import '../components/text_component.dart';
@@ -24,10 +24,8 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends BaseState<CartScreen> {
   final borderRadius = BorderRadius.circular(15.0); // Image border
 
-  //var name, description, price, id, image;
-  //int counter = 1;
 
-  final _productController = Get.put(IssueController());
+  final _productController = Get.put(ProductController());
 
   @override
   void initState() {
@@ -60,7 +58,7 @@ class _CartScreenState extends BaseState<CartScreen> {
               padding: const EdgeInsets.only(left: 16.0, right: 16.0),
               child: SizedBox(
                 height: SizeConfig.getScreenHeight(context) / 2,
-                child: GetBuilder<IssueController>(builder: (controller) {
+                child: GetBuilder<ProductController>(builder: (controller) {
                   return ListView.builder(
                       shrinkWrap: true,
                       itemCount: _productController.cartList.length,
@@ -121,11 +119,13 @@ class _CartScreenState extends BaseState<CartScreen> {
                                           TextComponent(
                                             item.title,
                                             maxLines: 3,
-                                            fontSize: textFontSize,
+                                            fontSize: textSmallFontSize,
                                             fontWeight: titleFontWeight,
                                             isTranslatable: false,
-                                            padding: EdgeInsets.only(
-                                                left: 8.0,
+                                            textAlign: TextAlign.start,
+                                            padding: const EdgeInsets.only(
+                                                left: 16.0,
+                                                top: 4.0,
                                                 bottom: 4.0,
                                                 right: 8.0),
                                           ),
@@ -134,8 +134,8 @@ class _CartScreenState extends BaseState<CartScreen> {
                                               fontWeight: titleFontWeight,
                                               color: kSecondaryColor,
                                               isTranslatable: false,
-                                              padding: EdgeInsets.only(
-                                                  left: 16.0, top: 0.0)),
+                                              padding: const EdgeInsets.only(
+                                                  left: 16.0, top: 0.0,bottom: 4.0)),
                                         ],
                                       ),
                                     ),
@@ -337,7 +337,7 @@ class _CartScreenState extends BaseState<CartScreen> {
             ),
           ),
           ButtonComponent(
-            text: 'Proceed to shipping',
+            text: 'Checkout',
             onPressed: () {},
             padding:
                 const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20.0),
@@ -346,15 +346,6 @@ class _CartScreenState extends BaseState<CartScreen> {
       ),
     );
   }
-
-  /*void updateQuantity(int? productItemId, int quantity) {
-    final searchId = _productController.cartList
-        .indexWhere((element) => element.id == productItemId);
-
-    var item = _productController.cartList[searchId];
-    item.quantity = quantity;
-    _productController.cartList[searchId] = item;
-  }*/
 
   void updateQuantity(int id, int newQuantity) {
     for (var item in _productController.cartList) {

@@ -10,7 +10,7 @@ import '../../utils/constants.dart';
 import 'package:get/get.dart';
 
 import '../utils/style.dart';
-import 'issue_list_page.dart';
+import 'product_list_page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

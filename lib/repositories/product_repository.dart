@@ -1,18 +1,18 @@
 import 'dart:developer';
 
 import '../../utils/constants.dart';
-import '../model/issue_response.dart';
+import '../model/product_response.dart';
 import '../network/api_client.dart';
 import '../utils/helper.dart';
 
-class IssueRepository {
+class ProductRepository {
   final ApiClient _apiClient = ApiClient.apiClient;
-  static final IssueRepository _issueRepository = IssueRepository._internal();
+  static final ProductRepository _productRepository = ProductRepository._internal();
 
-  IssueRepository._internal();
+  ProductRepository._internal();
 
-  factory IssueRepository() {
-    return _issueRepository;
+  factory ProductRepository() {
+    return _productRepository;
   }
 
   void getProduct(

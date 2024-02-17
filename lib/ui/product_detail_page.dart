@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'package:tr_cart/controller/issue_controller.dart';
-import 'package:tr_cart/model/issue_response.dart';
+import 'package:tr_cart/controller/product_controller.dart';
+import 'package:tr_cart/model/product_response.dart';
 import '../../base/base_state.dart';
 import 'package:get/get.dart';
 
@@ -25,14 +25,8 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
   ProductResponse? data;
 
-  int? selectedRadio;
-  var selectedItem;
+  final _productController = Get.put(ProductController());
 
-  String? cardRadioGroupValue;
-  int? cardIndex;
-  final _productController = Get.put(IssueController());
-
-  int? _selectedIndex;
 
   @override
   void initState() {
@@ -58,7 +52,7 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
                 transition: sendTransition,
               )?.then((val) {
                 if (val == true) {
-                  _productController.getAllIssue();
+                  _productController.getProducts();
                 }
               });
             } else {
@@ -67,7 +61,7 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
           },
           child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: GetBuilder<IssueController>(builder: (controller) {
+              child: GetBuilder<ProductController>(builder: (controller) {
                 return _productController.cartList.isNotEmpty
                     ? SvgPicture.asset(
                         Assets.icons.cartFull,
@@ -242,12 +236,5 @@ class _ProductDetailScreenState extends BaseState<ProductDetailScreen> {
             )
           : const SizedBox.shrink(),
     );
-  }
-
-  setSelectedRadio(int val) {
-    setState(() {
-      selectedRadio = val;
-      selectedItem = val;
-    });
   }
 }

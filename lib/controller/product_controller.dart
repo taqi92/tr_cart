@@ -1,27 +1,25 @@
 import 'dart:developer';
 
-import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:tr_cart/db_adapter/product_adapter.dart';
-import '../model/issue_response.dart';
-import '../repositories/issue_repository.dart';
+import '../model/product_response.dart';
+import '../repositories/product_repository.dart';
 import '../utils/constants.dart';
 import '../utils/endpoints.dart';
 
-abstract class IssueRepositoryInterface {
+abstract class ProductRepositoryInterface {
   void getIssue();
 }
 
-class IssueController extends GetxController {
-  late final IssueRepository _issueRepository;
+class ProductController extends GetxController {
+
+  late final ProductRepository _productRepository;
 
   List<ProductResponse> productList = [];
   Set<String> labelList = {};
   List<ProductResponse> cartList = [];
 
-  int pageNo = 1;
-  bool isLastPage = false;
 
   var orderSubTotal = Rxn<int>();
   var orderFee = Rxn<double>();
@@ -36,36 +34,22 @@ class IssueController extends GetxController {
 
   @override
   void onInit() {
-    _issueRepository = IssueRepository();
+    _productRepository = ProductRepository();
     openDb();
     super.onInit();
   }
 
-  Future<void> getAllIssue(
-      {int pageSize = 20,
-      bool isFromLoadNext = false,
-      bool isLabeled = false}) async {
+  Future<void> getProducts() async {
 
     loading.value = true;
 
-    if (!isFromLoadNext) {
-      productList = [];
-      pageNo = 1;
-    }
 
-    //loading();
-
-
-    _issueRepository.getProduct(fetchListEndPoints, (response, error) {
+    _productRepository.getProduct(fetchListEndPoints, (response, error) {
       if (response != null) {
         var payload = response;
 
         for (var item in payload) {
           productList.add(item);
-        }
-
-        if (response.isEmpty) {
-          isLastPage = true;
         }
 
         dismissLoading();
@@ -85,16 +69,10 @@ class IssueController extends GetxController {
     });
   }
 
-  void loadNextPage() {
-    if (!isLastPage) {
-      pageNo++;
-      getAllIssue(isFromLoadNext: true);
-    }
-  }
 
   void clearFilter() {
     labelList.clear();
-    getAllIssue();
+    getProducts();
   }
 
   removeItem(int index) {

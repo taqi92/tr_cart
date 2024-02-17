@@ -1,16 +1,17 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'package:tr_cart/ui/cart_screen.dart';
 import 'package:tr_cart/ui/loading_view/all_campaign_shimmer.dart';
 import 'package:tr_cart/ui/product_detail_page.dart';
 import '../base/base_state.dart';
 import '../components/button_component.dart';
 import '../components/text_component.dart';
-import '../controller/issue_controller.dart';
+import '../controller/product_controller.dart';
 import '../gen/assets.gen.dart';
 import '../utils/constants.dart';
+import '../utils/size_config.dart';
 import '../utils/style.dart';
 
 class IssueListPage extends StatefulWidget {
@@ -21,19 +22,20 @@ class IssueListPage extends StatefulWidget {
 }
 
 class _IssueListState extends BaseState<IssueListPage> {
-  final _productController = Get.put(IssueController());
+  final _productController = Get.put(ProductController());
 
   @override
   void initState() {
 
-
-    isInternetConnected(context).then((internet) {
+    /*isInternetConnected(context).then((internet) {
       if (internet) {
         _productController.getAllIssue();
       } else {
         _productController.getDataFromDb();
       }
-    });
+    });*/
+
+    _productController.getProducts();
 
     super.initState();
   }
@@ -42,7 +44,7 @@ class _IssueListState extends BaseState<IssueListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: myAppBar(
-        title: 'Issues',
+        title: 'Products',
         isNavigate: false,
         actions: <Widget>[
           GestureDetector(
@@ -53,7 +55,7 @@ class _IssueListState extends BaseState<IssueListPage> {
                   transition: sendTransition,
                 )?.then((val) {
                   if (val == true) {
-                    _productController.getAllIssue();
+                    _productController.getProducts();
                   }
                 });
               } else {
@@ -62,7 +64,7 @@ class _IssueListState extends BaseState<IssueListPage> {
             },
             child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: GetBuilder<IssueController>(builder: (controller) {
+                child: GetBuilder<ProductController>(builder: (controller) {
                   return _productController.cartList.isNotEmpty
                       ? SvgPicture.asset(
                           Assets.icons.cartFull,
@@ -76,22 +78,16 @@ class _IssueListState extends BaseState<IssueListPage> {
           )
         ],
       ),
-      body: GetBuilder<IssueController>(
+      body: GetBuilder<ProductController>(
         builder: (controller) {
           var posts = controller.productList;
 
-          if(controller.loading.value){
-
+          if (controller.loading.value) {
             return AllCampaignLoadingPage();
-
-          }else{
-
+          } else {
             if (posts.isNotEmpty) {
-              return LazyLoadScrollView(
-                isLoading: controller.isLastPage,
-                onEndOfPage: () {
-                  controller.loadNextPage();
-                },
+              return RefreshIndicator(
+                onRefresh: _refresh,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: GridView.count(
@@ -104,7 +100,7 @@ class _IssueListState extends BaseState<IssueListPage> {
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     children:
-                    List.generate(controller.productList.length, (index) {
+                        List.generate(controller.productList.length, (index) {
                       var item = posts[index];
 
                       return GestureDetector(
@@ -133,27 +129,50 @@ class _IssueListState extends BaseState<IssueListPage> {
                                         topLeft: Radius.circular(10.0)),
                                     child: Container(
                                       color: Colors.white,
-                                      child: item.image != null
+                                      child: item.thumbnail != null
                                           ? AspectRatio(
-                                        aspectRatio: 3 / 2,
-                                        child: Image.network(
-                                          item.image!,
-                                          //height: 100,
-                                          fit: BoxFit.fill,
-                                        ),
-                                      )
+                                              aspectRatio: 3 / 2,
+                                              child: CachedNetworkImage(
+                                                  imageUrl: item.thumbnail!,
+                                                  color: Colors.black
+                                                      .withOpacity(0.2),
+                                                  colorBlendMode:
+                                                      BlendMode.darken,
+                                                  progressIndicatorBuilder:
+                                                      (context, url,
+                                                              downloadProgress) =>
+                                                          SizedBox(
+                                                              height: 80,
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        16.0),
+                                                                child: Center(
+                                                                  child: CircularProgressIndicator(
+                                                                      value: downloadProgress
+                                                                          .progress,
+                                                                      color:
+                                                                          kPrimaryColor),
+                                                                ),
+                                                              )),
+                                                  width:
+                                                      SizeConfig.getScreenWidth(
+                                                          context),
+                                                  fit: BoxFit.fill),
+                                            )
                                           : AspectRatio(
-                                        aspectRatio: 3 / 2,
-                                        child: Image.asset(
-                                          'assets/images/content_placeHolder.png',
-                                          //height: 100,
-                                          fit: BoxFit.fill,
-                                        ),
-                                      ),
+                                              aspectRatio: 3 / 2,
+                                              child: Image.asset(
+                                                'assets/images/content_placeHolder.png',
+                                                //height: 100,
+                                                fit: BoxFit.fill,
+                                              ),
+                                            ),
                                     )),
                                 Padding(
-                                  padding:
-                                  const EdgeInsets.only(left: 8.0, top: 4.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 8.0, top: 4.0),
                                   child: TextComponent(
                                     item.title ?? 'Sample Item',
                                     maxLines: 1,
@@ -177,25 +196,25 @@ class _IssueListState extends BaseState<IssueListPage> {
                                 ),
                                 item.userId != 0
                                     ? Visibility(
-                                  visible: item.isVisible,
-                                  child: ButtonComponent(
-                                    text: 'Add to Cart',
-                                    fontSize: k13FontSize,
-                                    padding: const EdgeInsets.only(
-                                        left: 16.0, right: 16.0),
-                                    onPressed: () {
-                                      setState(() {
-                                        _productController.cartList
-                                            .add(item);
+                                        visible: item.isVisible,
+                                        child: ButtonComponent(
+                                          text: 'Add to Cart',
+                                          fontSize: k13FontSize,
+                                          padding: const EdgeInsets.only(
+                                              left: 16.0, right: 16.0),
+                                          onPressed: () {
+                                            setState(() {
+                                              _productController.cartList
+                                                  .add(item);
 
-                                        item.isVisible = !item.isVisible;
-                                      });
-                                    },
-                                  ),
-                                )
+                                              item.isVisible = !item.isVisible;
+                                            });
+                                          },
+                                        ),
+                                      )
                                     : const TextComponent("Out of Stock",
-                                    color: kErrorColor,
-                                    padding: EdgeInsets.zero),
+                                        color: kErrorColor,
+                                        padding: EdgeInsets.zero),
                                 Visibility(
                                   visible: !item.isVisible,
                                   child: Padding(
@@ -203,7 +222,7 @@ class _IssueListState extends BaseState<IssueListPage> {
                                         left: 16.0, right: 16.0),
                                     child: Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                          MainAxisAlignment.spaceAround,
                                       children: [
                                         Expanded(
                                             flex: 1,
@@ -220,7 +239,8 @@ class _IssueListState extends BaseState<IssueListPage> {
                                                     });
 
                                                     controller.updateQuantity(
-                                                        item.id!, item.quantity);
+                                                        item.id!,
+                                                        item.quantity);
                                                   }
                                                 },
                                                 child: SvgPicture.asset(
@@ -246,7 +266,8 @@ class _IssueListState extends BaseState<IssueListPage> {
                                                     });
 
                                                     controller.updateQuantity(
-                                                        item.id!, item.quantity);
+                                                        item.id!,
+                                                        item.quantity);
                                                     //_productController.addInCart(productItem);
                                                   }
                                                 },
@@ -268,10 +289,18 @@ class _IssueListState extends BaseState<IssueListPage> {
             } else {
               return noDataFoundWidget(divider: 1.25);
             }
-
           }
         },
       ),
     );
+  }
+
+  Future<void> _refresh() async {
+    // Simulate fetching new data
+    await Future.delayed(const Duration(seconds: 2));
+    setState(() {
+      // Update the data
+      _productController.getProducts();
+    });
   }
 }
